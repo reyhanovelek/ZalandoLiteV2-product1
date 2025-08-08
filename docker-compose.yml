@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  product-db:
+    image: postgres:16
+    container_name: product-db
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: product_user
+      POSTGRES_PASSWORD: product_pass
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U product_user -d product_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - zalando-backend
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+
+  product-service:
+    build: .
+    container_name: product-service
+    depends_on:
+      product-db:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+    ports:
+      - "8586:8586"
+    networks:
+      - zalando-backend
+
+networks:
+  zalando-backend:
+    external: true
+
+volumes:
+  product-db-data:

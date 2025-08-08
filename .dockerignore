@@ -1,0 +1,15 @@
+# Maven / build çıktıları
+target/
+**/target/
+
+# IDE dosyaları
+.idea/
+*.iml
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# Sistem
+.DS_Store
