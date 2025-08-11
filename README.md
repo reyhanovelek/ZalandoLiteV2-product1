@@ -17,12 +17,12 @@ data. It handles product creation, retrieval, and provides real-time stock avail
 external Inventory Service.
 
 ## Features
-Store and retrieve product details: ID, name, description, price
-Communicate with Inventory Service to check stock quantity
-RESTful API design with Spring Boot
-Clean architecture using DTOs and mappers
-Configurable service URL via application properties
-Validates input using Spring's bean validation
-Environment variable support via .env file using dotenv-java
-Database configuration via application.properties
-Docker support with PostgreSQL integration
+- Store and retrieve product details: ID, name, description, price 
+- Communicate with Inventory Service to check stock quantity 
+- RESTful API design with Spring Boot 
+- Clean architecture using DTOs and mappers 
+- Configurable service URL via application properties 
+- Validates input using Spring's bean validation 
+- Environment variable support via .env file using dotenv-java 
+- Database configuration via application.properties 
+- Docker support with PostgreSQL integration

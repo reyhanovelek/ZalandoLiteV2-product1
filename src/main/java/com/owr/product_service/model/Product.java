@@ -28,12 +28,14 @@ public class Product {
     private String category;
 
     /**
+     * A brief description of the product.
+     */
+    private  String description;
+
+    /**
      * The price of the product.
      */
     private Double price;
 
-    /**
-     * A brief description of the product.
-     */
-    private  String description;
+
 }
