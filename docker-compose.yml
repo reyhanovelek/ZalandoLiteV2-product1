@@ -1,41 +1,49 @@
-version: "3.9"
+# version: '3.8'
 
 services:
-  product-db:
-    image: postgres:16
-    container_name: product-db
-    environment:
-      POSTGRES_DB: product_db
-      POSTGRES_USER: product_user
-      POSTGRES_PASSWORD: product_pass
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U product_user -d product_db"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-    networks:
-      - zalando-backend
-    volumes:
-      - product-db-data:/var/lib/postgresql/data
-
+  # -------------------------------------------
+  # 🧩 Microservice: Product Service
+  # Description: Manages product data and communicates with inventory service
+  # Port: Exposes 9090 on host
+  # Depends on: PostgreSQL container (products_db)
+  # -------------------------------------------
   product-service:
-    build: .
+    build:
+      dockerfile: Dockerfile               # Dockerfile for building the Spring Boot app
     container_name: product-service
-    depends_on:
-      product-db:
-        condition: service_healthy
-    env_file:
-      - .env.docker
     ports:
-      - "8586:8586"
+      - "8586:8586"                        # Maps container port 9090 to host port 9090
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://products_db:5432/products  # DB connection URL
+      SPRING_DATASOURCE_USERNAME: postgres                                 # DB username
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}                           # Loaded from .env
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://accounts.google.com
+    depends_on:
+      - products_db                     # Ensure DB is ready before service starts
     networks:
-      - zalando-backend
+      - backend                         # Use shared network for service discovery
 
+  # -------------------------------------------
+  # 🗄️ PostgreSQL Database Service
+  # Description: PostgreSQL container for storing product data
+  # Port: Maps PostgreSQL port 5432 to host port 5433
+  # -------------------------------------------
+  products_db:
+    image: postgres:15                  # Uses official PostgreSQL image
+    container_name: productsDB
+    environment:
+      POSTGRES_DB: products             # Database name
+      POSTGRES_USER: postgres           # DB user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # DB password (loaded from .env)
+    ports:
+      - "5432:5432"                     # Map container 5432 to host 5433
+    networks:
+      - zalando-backend                         # Shared network for inter-service communication
+
+# -------------------------------------------
+# 🔗 Network Configuration
+# Description: Enables internal communication between services
+# -------------------------------------------
 networks:
   zalando-backend:
     external: true
-
-volumes:
-  product-db-data:
