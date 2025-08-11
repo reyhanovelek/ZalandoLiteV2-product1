@@ -14,12 +14,12 @@ services:
     ports:
       - "8586:8586"                        # Maps container port 9090 to host port 9090
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://products_db:5432/products  # DB connection URL
+      SPRING_DATASOURCE_URL: jdbc:postgresql://productsDB:5432/products  # DB connection URL
       SPRING_DATASOURCE_USERNAME: postgres                                 # DB username
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}                           # Loaded from .env
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://accounts.google.com
     depends_on:
-      - products_db                     # Ensure DB is ready before service starts
+      - productsDB                     # Ensure DB is ready before service starts
     networks:
       - backend                         # Use shared network for service discovery
 
@@ -28,7 +28,7 @@ services:
   # Description: PostgreSQL container for storing product data
   # Port: Maps PostgreSQL port 5432 to host port 5433
   # -------------------------------------------
-  products_db:
+  productsDB:
     image: postgres:15                  # Uses official PostgreSQL image
     container_name: productsDB
     environment:
