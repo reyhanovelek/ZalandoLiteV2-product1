@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +31,11 @@ public class ProductService {
         List<Product> products = repository.findAll();
 
         return products.stream()
-                .map(product -> ProductMapper.toDTO(
-                        product,
-                        safeGetStock(product.getId())
-                )).toList();
+                .map(product -> {
+                    Integer stock = safeGetStock(product.getId());
+                    return ProductMapper.toDTO(product, stock);
+                })
+                .toList();
     }
 
     /**
@@ -170,6 +170,12 @@ public class ProductService {
         }
         repository.deleteById(id);
     }
+
+    public Double getUnitPrice(Long productId) {
+        return repository.findById(productId)
+                .map(Product::getPrice)
+                .orElseThrow(() -> new NoSuchElementException("Product not found: " + productId));
+    }
     /**========================================================================
      * Helper Methods
      ===========================================================================*/
@@ -190,12 +196,4 @@ public class ProductService {
         }
     }
 
-
-//
-//    public void delete(Long id) {
-//        if (!repo.existsById(id)) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
-//        }
-//        repo.deleteById(id);
-//    }
 }

@@ -20,6 +20,11 @@ public class ProductController {
 
     private final ProductService service;
 
+    @GetMapping("/{id}/price")
+    public Double getPrice(@PathVariable Long id) {
+        return service.getUnitPrice(id);
+    }
+
     /**
      * Retrieves all products along with their current stock quantities.
      *
@@ -74,7 +79,7 @@ public class ProductController {
      * @throws NoSuchElementException if no product exists with the given {@code name};
      *                                consider handling this via a {@code @ControllerAdvice} to return 404 Not Found
      */
-    @GetMapping("/{name}")
+    @GetMapping("/by-name/{name}")
     public ResponseEntity<ProductDto> findProductByName(@PathVariable String name) {
         return ResponseEntity.ok(
                 service.findProductByName(name)

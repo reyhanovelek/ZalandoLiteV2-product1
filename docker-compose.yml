@@ -14,29 +14,30 @@ services:
     ports:
       - "8586:8586"                        # Maps container port 9090 to host port 9090
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://productsDB:5432/products  # DB connection URL
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5433/productsdb # DB connection URL
       SPRING_DATASOURCE_USERNAME: postgres                                 # DB username
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}                           # Loaded from .env
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://accounts.google.com
     depends_on:
-      - productsDB                     # Ensure DB is ready before service starts
-    networks:
-      - backend                         # Use shared network for service discovery
+      productsdb:
+        condition: service_healthy
+    networks: [ zalando-backend ]
+    restart: unless-stopped                      # Use shared network for service discovery
 
   # -------------------------------------------
   # 🗄️ PostgreSQL Database Service
   # Description: PostgreSQL container for storing product data
   # Port: Maps PostgreSQL port 5432 to host port 5433
   # -------------------------------------------
-  productsDB:
+  productsdb:
     image: postgres:15                  # Uses official PostgreSQL image
-    container_name: productsDB
+    container_name: productsdb
     environment:
-      POSTGRES_DB: products             # Database name
+      POSTGRES_DB: productsdb             # Database name
       POSTGRES_USER: postgres           # DB user
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # DB password (loaded from .env)
     ports:
-      - "5432:5432"                     # Map container 5432 to host 5433
+      - "5433:5432"                     # Map container 5432 to host 5433
     networks:
       - zalando-backend                         # Shared network for inter-service communication
 

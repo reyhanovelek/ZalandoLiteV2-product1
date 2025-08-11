@@ -63,8 +63,6 @@ Including the common dependencies (check here), some **unique dependencies** for
 
 **PostgreSQL dependency snippets**
 
-<details>
-<summary>Maven</summary>
 
 ```xml
 <dependency>
@@ -74,3 +72,28 @@ Including the common dependencies (check here), some **unique dependencies** for
 </dependency>
 ```
 
+#### product json: 
+POST `http://localhost:8586/api/products`
+```yaml
+  {
+    "product": {
+      "name": "WidgetA",
+      "category": "widgets",
+      "description": "Lightweight, durable widget",
+      "price": 19.99
+    },
+    "quantity": 50
+  }
+
+  {
+    "product": {
+      "name": "iphone 12 Mini",
+      "category": "Electronics",
+      "description": "Lightweight, durable Electronic",
+      "price": 1250.99
+    },
+    "quantity": 500
+  }
+
+
+```
