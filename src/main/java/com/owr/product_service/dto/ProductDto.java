@@ -25,10 +25,6 @@ public class ProductDto {
      */
     private String name;
 
-    /**
-     * The price of the product.
-     */
-    private double price;
 
     /**
      * The category of the product.
@@ -39,6 +35,12 @@ public class ProductDto {
      * A brief description of the product.
      */
     private String description;
+
+    /**
+     * The price of the product.
+     */
+    private double price;
+
 
     /**
      * The quantity of the product in stock.
