@@ -43,7 +43,7 @@ external Inventory Service.
 | Method | URL                    | Purpose                  |
 |-------:|------------------------|--------------------------|
 |   POST | `/api/products`        | Create product           |
-|    GET | `/api/products`        | List all products        |
+|    GET | `/api/products/all`    | List all products        |
 |    GET | `/api/products/{id}`   | Get product by ID        |
 |    GET | `/api/products/{name}` | Get product by name      |
 |  PATCH | `/api/products/{id}`   | Partially update product |

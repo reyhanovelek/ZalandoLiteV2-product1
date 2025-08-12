@@ -1,14 +1,19 @@
 package com.owr.product_service.service.client;
 
 
+import com.owr.product_service.exceptions.InventoryUnavailableException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 /*=================================================================================
  * Project: product-service
@@ -79,29 +84,41 @@ public class InventoryClient {
     }
 
     /**
-     * Retrieves the available stock quantity for the given product
-     * by making an authenticated HTTP GET request to the inventory service.
-     * *
-     * This method uses a {@link RestTemplate} to communicate with the external inventory service.
-     * The authorization header is forwarded from the current request using {@code getAuthHeaders()}.
+     * Retrieves the available stock quantity for a given product
+     * by making an HTTP GET request to the inventory service.
      *
-     * @param productId the ID of the product whose stock quantity is to be fetched
-     * @return the stock quantity from the inventory service; returns {@code 0} if the response body is {@code null}
+     * @param productId the unique identifier of the product
+     * @return the stock quantity from the inventory service, or 0 if unavailable
+     * @throws InventoryUnavailableException if the inventory service is unreachable or returns an error
      */
     public int getStockQuantity(Long productId) {
 
         // Wrap the authorization headers in an HttpEntity (no request body needed for GET)
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders());
 
+        // 2. Build the full URL for the inventory lookup in a safe way:
+        URI uri = UriComponentsBuilder
+                .fromHttpUrl(inventoryServiceUrl)   // e.g. "http://inventory-service:8687/api/inventory/"
+                .pathSegment("{id}")                // appends /{id} safely
+                .build(productId);                   // replaces {id} with the actual value
+
+
+        try {
         // Send GET request to inventory service: /{productId}
         ResponseEntity<Integer> response = restTemplate.exchange(
-                inventoryServiceUrl + productId, // Full URL for the product stock lookup
+                uri, // Full URL for the product stock lookup
                 HttpMethod.GET, // HTTP GET method
                 entity, // Headers including Authorization
                 Integer.class // Expecting an Integer response (stock quantity)
         );
         // Return the quantity if not null, otherwise default to 0
         return response.getBody() != null ? response.getBody() : 0;
+        } catch (RestClientResponseException e) {
+            // 5b. Thrown when the service returns a 4xx or 5xx status code.
+            throw new InventoryUnavailableException(
+                    "Inventory error " + e.getRawStatusCode() + " at " + uri, e
+            );
+        }
     }
 
     /**

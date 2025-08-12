@@ -28,14 +28,10 @@ public class ProductService {
      * @return a list of {@link ProductDto} containing product details and current stock levels
      */
     public List<ProductDto> getAllProducts() {
-        List<Product> products = repository.findAll();
-
-        return products.stream()
-                .map(product -> {
-                    Integer stock = safeGetStock(product.getId());
-                    return ProductMapper.toDTO(product, stock);
-                })
-                .toList();
+        return repository.findAll().stream()
+                .map(p-> ProductMapper.toDTO(
+                        p, safeGetStock(p.getId())
+                )).toList();
     }
 
     /**
@@ -77,9 +73,9 @@ public class ProductService {
         Product product = repository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found: " + id));
 
-        int qty = safeGetStock(id);
 
-        return ProductMapper.toDTO(product, qty);
+
+        return ProductMapper.toDTO(product, safeGetStock(id));
 
     }
 
@@ -97,9 +93,8 @@ public class ProductService {
         Product product = repository.findByName(name)
                 .orElseThrow(() -> new NoSuchElementException("Product not found: " + name));
 
-        int qty = safeGetStock(product.getId());
 
-        return ProductMapper.toDTO(product, qty);
+        return ProductMapper.toDTO(product, safeGetStock(product.getId()));
 
     }
 
@@ -172,6 +167,7 @@ public class ProductService {
     }
 
     public Double getUnitPrice(Long productId) {
+
         return repository.findById(productId)
                 .map(Product::getPrice)
                 .orElseThrow(() -> new NoSuchElementException("Product not found: " + productId));

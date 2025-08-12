@@ -20,33 +20,14 @@ public class ProductController {
 
     private final ProductService service;
 
-    @GetMapping("/{id}/price")
-    public Double getPrice(@PathVariable Long id) {
-        return service.getUnitPrice(id);
-    }
-
     /**
      * Retrieves all products along with their current stock quantities.
      *
      * @return a list of {@link ProductDto} containing product and stock information
      */
-    @GetMapping
+    @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
         return service.getAllProducts();
-    }
-
-    /**
-     * Adds a new product to the system and sets its initial stock quantity.
-     *
-     * @param request a {@code productWithQuantity} object containing product info and quantity
-     * @return the newly added product as a {@link ProductDto}
-     */
-    @PostMapping
-    public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody ProductWithQuantity request) {
-        ProductDto created = service.addProduct(
-                request.product(),
-                request.quantity());
-        return ResponseEntity.ok(created);
     }
 
     /**
@@ -67,6 +48,11 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/{id}/price")
+    public Double getPrice(@PathVariable Long id) {
+        return service.getUnitPrice(id);
+    }
+
 
     /**
      * Retrieves a product by its name.
@@ -84,6 +70,20 @@ public class ProductController {
         return ResponseEntity.ok(
                 service.findProductByName(name)
         );
+    }
+
+    /**
+     * Adds a new product to the system and sets its initial stock quantity.
+     *
+     * @param request a {@code productWithQuantity} object containing product info and quantity
+     * @return the newly added product as a {@link ProductDto}
+     */
+    @PostMapping
+    public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody ProductWithQuantity request) {
+        ProductDto created = service.addProduct(
+                request.product(),
+                request.quantity());
+        return ResponseEntity.ok(created);
     }
 
     /**
